@@ -13,16 +13,16 @@ contract WrappedTokenMock is IWrappedToken {
     event MintTo(address recipient, uint256 amount);
     event Burn(address account, uint256 amount);
 
-    function initialize(string calldata name, string calldata symbol, uint8 decimals, address owner) {
+    function initialize(string calldata name, string calldata symbol, uint8 decimals, address owner) external override {
         emit Initialized(name, symbol, decimals, owner);
     }
 
-    function mintTo(address recipient, uint256 amount) external returns (bool) {
+    function mintTo(address recipient, uint256 amount) external override returns (bool) {
         emit MintTo(recipient, amount);
         return true;
     }
 
-    function burn(address account, uint256 amount) external returns (bool) {
+    function burn(address account, uint256 amount) external override returns (bool) {
         emit Burn(account, amount);
         return true;
     }
