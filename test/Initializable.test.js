@@ -2,13 +2,33 @@ const { expectRevert } = require('@openzeppelin/test-helpers');
 
 const { assert } = require('chai');
 
-const InitializableMock = artifacts.require('InitializableMock');
-const SampleChild = artifacts.require('SampleChild');
+const BEP20InitializableMock = artifacts.require('contracts/mocks/BEP20TokenImplMocks.sol:InitializableMock');
+const ERC20InitializableMock = artifacts.require('contracts/mocks/ERC20TokenImplMocks.sol:InitializableMock');
+const EthTelInitializableMock = artifacts.require('contracts/mocks/EthTeleportAgentMocks.sol:InitializableMock');
+const BscTelInitializableMock = artifacts.require('contracts/mocks/BscTeleportAgentMocks.sol:InitializableMock');
 
-contract('Initializable', function (accounts) {
+
+contract('BEP20Initializable', function (accounts) {
+  shouldBehaveLikeInitializable(BEP20InitializableMock);
+});
+
+contract('ERC20Initializable', function (accounts) {
+  shouldBehaveLikeInitializable(ERC20InitializableMock);
+});
+
+contract('EthTeleportAgentInitializable', function (accounts) {
+  shouldBehaveLikeInitializable(EthTelInitializableMock);
+});
+
+contract('BscTeleportAgentInitializable', function (accounts) {
+  shouldBehaveLikeInitializable(BscTelInitializableMock);
+});
+
+
+function shouldBehaveLikeInitializable(artifact) {
   describe('basic testing without inheritance', function () {
     beforeEach('deploying', async function () {
-      this.contract = await InitializableMock.new();
+      this.contract = await artifact.new();
     });
 
     context('before initialize', function () {
@@ -41,39 +61,4 @@ contract('Initializable', function (accounts) {
       });
     });
   });
-
-  describe('complex testing with inheritance', function () {
-    const mother = 12;
-    const gramps = '56';
-    const father = 34;
-    const child = 78;
-
-    beforeEach('deploying', async function () {
-      this.contract = await SampleChild.new();
-    });
-
-    beforeEach('initializing', async function () {
-      await this.contract.initialize(mother, gramps, father, child);
-    });
-
-    it('initializes human', async function () {
-      assert.equal(await this.contract.isHuman(), true);
-    });
-
-    it('initializes mother', async function () {
-      assert.equal(await this.contract.mother(), mother);
-    });
-
-    it('initializes gramps', async function () {
-      assert.equal(await this.contract.gramps(), gramps);
-    });
-
-    it('initializes father', async function () {
-      assert.equal(await this.contract.father(), father);
-    });
-
-    it('initializes child', async function () {
-      assert.equal(await this.contract.child(), child);
-    });
-  });
-});
+}

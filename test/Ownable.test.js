@@ -3,13 +3,33 @@ const { ZERO_ADDRESS } = constants;
 
 const { expect } = require('chai');
 
-const Ownable = artifacts.require('OwnableMock');
+const BEP20OwnableMock = artifacts.require('contracts/mocks/BEP20TokenImplMocks.sol:OwnableMock');
+const ERC20OwnableMock = artifacts.require('contracts/mocks/ERC20TokenImplMocks.sol:OwnableMock');
+const EthTelOwnableMock = artifacts.require('contracts/mocks/EthTeleportAgentMocks.sol:OwnableMock');
+const BscTelOwnableMock = artifacts.require('contracts/mocks/BscTeleportAgentMocks.sol:OwnableMock');
 
-contract('Ownable', function (accounts) {
+contract('ERC20Ownable', function (accounts) {
+  shouldBehaveLikeOwnable(ERC20OwnableMock, accounts);
+});
+
+contract('BEP20Ownable', function (accounts) {
+  shouldBehaveLikeOwnable(BEP20OwnableMock, accounts);
+});
+
+contract('EthTeleportAgentOwnable', function (accounts) {
+  shouldBehaveLikeOwnable(EthTelOwnableMock, accounts);
+});
+
+contract('BscTeleportAgentOwnable', function (accounts) {
+  shouldBehaveLikeOwnable(BscTelOwnableMock, accounts);
+});
+
+
+function shouldBehaveLikeOwnable(artifact, accounts) {
   const [ owner, other ] = accounts;
 
   beforeEach(async function () {
-    this.ownable = await Ownable.new({ from: owner });
+    this.ownable = await artifact.new({ from: owner });
   });
 
   it('has an owner', async function () {
@@ -38,20 +58,4 @@ contract('Ownable', function (accounts) {
       );
     });
   });
-
-  xdescribe('renounce ownership', function () {
-    it('loses owner after renouncement', async function () {
-      const receipt = await this.ownable.renounceOwnership({ from: owner });
-      expectEvent(receipt, 'OwnershipTransferred');
-
-      expect(await this.ownable.owner()).to.equal(ZERO_ADDRESS);
-    });
-
-    it('prevents non-owners from renouncement', async function () {
-      await expectRevert(
-        this.ownable.renounceOwnership({ from: other }),
-        'Ownable: caller is not the owner',
-      );
-    });
-  });
-});
+}
