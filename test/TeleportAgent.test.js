@@ -235,4 +235,13 @@ function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, agentCallerAr
 
         // todo: check balance after
     });
+
+    it('can\'t teleport unwrapped token', async function() {        
+        const amount = new BN(5);
+        await this.token.approve(this.teleport.address, amount);
+        await expectRevert(
+            this.teleport.teleportStart(this.token.address, amount, anotherChainId, { value: teleportFee }),
+            'token address not wrapped'
+        );
+    });
 }
