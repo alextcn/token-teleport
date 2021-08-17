@@ -245,3 +245,15 @@ contract SafeERC20Wrapper is Context {
         return _token.allowance(address(0), address(0));
     }
 }
+
+
+contract EthTeleportAgentMock is EthTeleportAgent {
+}
+
+
+contract EthTeleportAgentMockCaller {
+    function callAgent(address agent) external {
+        EthTeleportAgentMock(agent).teleportStart(address(0), 0, 0);
+    }
+}
+
