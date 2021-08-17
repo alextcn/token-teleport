@@ -51,6 +51,15 @@ function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, accounts) {
         this.ownable = this.teleport;
     });
 
+    it('failed init', async function () {
+        // deploy teleport
+        const teleport = await teleportArtifact.new();
+        await expectRevert(
+            teleport.initialize(registerFee, teleportFee, ZERO_ADDRESS, this.wrappedTokenMock.address),
+            "zero owner address",
+        );
+    });
+
     describe('transfer ownership', function () {
         it('changes owner after transfer', async function () {
             const receipt = await this.teleport.transferOwnership(other, { from: sender });
