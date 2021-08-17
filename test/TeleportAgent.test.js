@@ -226,6 +226,34 @@ function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, accounts) {
         // todo: check balance after
     });
 
+    it('start teleport for wrapped token', async function() {
+        // create pair
+        const fromChainId = thisChainId;
+        const fromChainTokenAddr = this.token.address;
+        const fromChainRegisterTxHash = '0x0';
+        const originalTokenChainId = anotherChainId;
+        const originalTokenAddr = this.anotherToken.address;
+        const name = 'Wrapped Token';
+        const symbol = 'WTKN';
+        const decimals = 18;
+        var receipt = await this.teleport.createTeleportPair(
+            fromChainId, fromChainTokenAddr, fromChainRegisterTxHash,
+            originalTokenAddr, originalTokenChainId, 
+            name, symbol, decimals
+        );
+        expectEvent(receipt, 'TeleportPairCreated');
+
+        // start teleport
+        const amount = new BN(5);
+        const wrappedTokenAddress = receipt.logs[0].args.wrappedTokenAddr;
+        await this.token.approve(this.teleport.address, amount);
+        receipt = await this.teleport.teleportStart(
+            wrappedTokenAddress, amount, anotherChainId, 
+            { value: teleportFee }
+        );
+        expectEvent(receipt, 'TeleportStarted');
+    });
+
     it('can\'t teleport unwrapped token', async function() {        
         const amount = new BN(5);
         await this.token.approve(this.teleport.address, amount);
