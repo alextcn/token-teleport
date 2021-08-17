@@ -2,7 +2,7 @@
 
 pragma solidity =0.8.4;
 
-import "../utils/Ownable.sol";
+import "../ERC20TokenImplementation.sol";
 
 contract OwnableMock is Ownable {
     constructor() {

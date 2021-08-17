@@ -7,6 +7,7 @@ const {
   shouldBehaveLikeERC20Transfer,
   shouldBehaveLikeERC20Approve,
 } = require('./ERC20.behavior');
+const { shouldBehaveLikeOwnable } = require('./Ownable.behavior');
 
 const ERC20Mock = artifacts.require('BEP20Mock');
 
@@ -22,8 +23,12 @@ contract('BEP20TokenImplementation', function (accounts) {
     this.token = await ERC20Mock.new({ from: initialHolder });
     await this.token.initialize(name, symbol, 18, initialHolder);
     await this.token.mint(initialSupply);
+
+    this.ownable = this.token;
   });
 
+  shouldBehaveLikeOwnable(initialHolder, anotherAccount);
+  
   it('has an owner', async function () {
     expect(await this.token.getOwner()).to.equal(initialHolder);
   });

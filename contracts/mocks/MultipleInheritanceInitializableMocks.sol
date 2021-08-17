@@ -2,7 +2,7 @@
 
 pragma solidity =0.8.4;
 
-import "../utils/Initializable.sol";
+import "../ERC20TokenImplementation.sol";
 
 // Sample contracts showing upgradeability with multiple inheritance.
 // Child contract inherits from Father and Mother contracts, and Father extends from Gramps.

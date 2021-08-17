@@ -2,7 +2,7 @@
 
 pragma solidity =0.8.4;
 
-import "../utils/Initializable.sol";
+import "../ERC20TokenImplementation.sol";
 
 /**
  * @title InitializableMock
