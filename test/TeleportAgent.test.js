@@ -1,23 +1,25 @@
 const { BN, constants, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { ZERO_ADDRESS } = constants;
 
-const EthTeleportAgent = artifacts.require('EthTeleportAgent');
-const BscTeleportAgent = artifacts.require('BscTeleportAgent');
+const EthTeleportAgent = artifacts.require('EthTeleportAgentMock');
+const BscTeleportAgentMockCaller = artifacts.require('BscTeleportAgentMockCaller');
+const BscTeleportAgent = artifacts.require('BscTeleportAgentMock');
+const EthTeleportAgentMockCaller = artifacts.require('EthTeleportAgentMockCaller');
 const ERC20Mock = artifacts.require('ERC20Mock');
 const BEP20Mock = artifacts.require('BEP20Mock');
-const WrappedTokenMock = artifacts.require('WrappedTokenMock')
+const WrappedTokenMock = artifacts.require('WrappedTokenMock');
 
 
 contract('EthTeleportAgent', function (accounts) {
-    shouldBehaveLikeTeleport(EthTeleportAgent, ERC20Mock, accounts);
+    shouldBehaveLikeTeleport(EthTeleportAgent, ERC20Mock, EthTeleportAgentMockCaller, accounts);
 });
 
 contract('BscTeleportAgent', function (accounts) {
-    shouldBehaveLikeTeleport(BscTeleportAgent, BEP20Mock, accounts);
+    shouldBehaveLikeTeleport(BscTeleportAgent, BEP20Mock, BscTeleportAgentMockCaller, accounts);
 });
 
 
-function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, accounts) {
+function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, agentCallerArtifact, accounts) {
     const [sender, other] = accounts;
 
     const thisChainId = 31337;
@@ -57,6 +59,14 @@ function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, accounts) {
         await expectRevert(
             teleport.initialize(registerFee, teleportFee, ZERO_ADDRESS, this.wrappedTokenMock.address),
             "zero owner address",
+        );
+    });
+
+    it('_ensureNotContract contracts not allowed', async function () {
+        const caller = await agentCallerArtifact.new();
+        await expectRevert(
+            caller.callAgent(this.teleport.address),
+            "contract not allowed to teleport",
         );
     });
 
