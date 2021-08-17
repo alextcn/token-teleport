@@ -38,9 +38,9 @@ if (argv.enableGasReport) {
   require('hardhat-gas-reporter');
 }
 
-for (const f of fs.readdirSync(path.join(__dirname, 'hardhat'))) {
-  require(path.join(__dirname, 'hardhat', f));
-}
+// for (const f of fs.readdirSync(path.join(__dirname, 'hardhat'))) {
+//   require(path.join(__dirname, 'hardhat', f));
+// }
 
 const withOptimizations = argv.enableGasReport || argv.compileMode === 'production';
 
