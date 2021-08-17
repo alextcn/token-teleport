@@ -85,14 +85,14 @@ contract AddressImpl {
 //        emit CallReturnValue(abi.decode(returnData, (string)));
 //    }
 
-//    function functionCallWithValue(
-//        address target,
-//        bytes calldata data,
-//        uint256 value
-//    ) external payable {
-//        bytes memory returnData = Address.functionCallWithValue(target, data, value);
-//        emit CallReturnValue(abi.decode(returnData, (string)));
-//    }
+    function functionCallWithValue(
+        address target,
+        bytes calldata data,
+        uint256 value
+    ) external payable {
+        bytes memory returnData = Address.functionCallWithValue(target, data, value, "functionCallWithValue-mock-failed");
+        emit CallReturnValue(abi.decode(returnData, (string)));
+    }
 
 //    function functionStaticCall(address target, bytes calldata data) external {
 //        bytes memory returnData = Address.functionStaticCall(target, data);
