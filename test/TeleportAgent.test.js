@@ -1,22 +1,29 @@
 const { BN, constants, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { ZERO_ADDRESS } = constants;
 
-const ERC20Mock = artifacts.require('ERC20Mock');
-const WrappedTokenMock = artifacts.require('WrappedTokenMock')
 const EthTeleportAgent = artifacts.require('EthTeleportAgent');
+const BscTeleportAgent = artifacts.require('BscTeleportAgent');
+const ERC20Mock = artifacts.require('ERC20Mock');
+const BEP20Mock = artifacts.require('BEP20Mock');
+const WrappedTokenMock = artifacts.require('WrappedTokenMock')
 
 
 contract('EthTeleportAgent', function (accounts) {
+    shouldBehaveLikeTeleport(EthTeleportAgent, ERC20Mock, accounts);
+});
+
+contract('BscTeleportAgent', function (accounts) {
+    shouldBehaveLikeTeleport(BscTeleportAgent, BEP20Mock, accounts);
+});
+
+
+function shouldBehaveLikeTeleport(teleportArtifact, tokenArtifact, accounts) {
     const [sender, other] = accounts;
 
     const thisChainId = 31337;
     const anotherChainId = 56;
-    const anotherChainTokenAddress = '0x433022c4066558e7a32d850f02d2da5ca782174d';
 
-    const name = 'My Token';
-    const symbol = 'MTKN';
     const tokenSupply = new BN(100);
-
     const anotherTokenSupply = new BN(100);
 
     const registerFee = new BN(500);
@@ -24,12 +31,12 @@ contract('EthTeleportAgent', function (accounts) {
 
     beforeEach(async function () {
         // deploy original token 
-        this.token = await ERC20Mock.new();
-        await this.token.initialize(name, symbol, 18, sender);
+        this.token = await tokenArtifact.new();
+        await this.token.initialize('My Token', 'MTKN', 18, sender);
         await this.token.mint(tokenSupply);
 
         // deploy another token 
-        this.anotherToken = await ERC20Mock.new();
+        this.anotherToken = await tokenArtifact.new();
         await this.anotherToken.initialize('Another Token', 'ATKN', 18, sender);
         await this.anotherToken.mint(anotherTokenSupply);
 
@@ -38,7 +45,7 @@ contract('EthTeleportAgent', function (accounts) {
         await this.wrappedTokenMock.initialize('Wrapped Token', 'WTKN', 18, sender);
 
         // deploy teleport
-        this.teleport = await EthTeleportAgent.new();
+        this.teleport = await teleportArtifact.new();
         await this.teleport.initialize(registerFee, teleportFee, sender, this.wrappedTokenMock.address);
 
         this.ownable = this.teleport;
@@ -141,33 +148,21 @@ contract('EthTeleportAgent', function (accounts) {
                 'fee mismatch'
             );
         });
-        xit('can\'t register for this chain', async function () {
-            const chainId = 1; // todo: get current network id
-            await expectRevert(
-                this.teleport.registerTeleportPair(this.token.address, chainId, { value: registerFee }),
-                'no need to register teleport to original chain'
-            );
-        })
     });
 
     describe('create teleport pair', function () {
-        // - can create
-        // - only owner
-        // - can't create twice
-        // - ...
+        // todo
     });
 
     describe('teleport start', function () {
-        // - x
-        // - y
+        // todo
     });
 
     describe('teleportFinish', function () {
         // - x
-        // -
     });
 
-    it('register, create, start', async function() {
+    it('register, create, start, finish', async function() {
         // register pair
         var receipt = await this.teleport.registerTeleportPair(
             this.token.address, 
@@ -221,6 +216,4 @@ contract('EthTeleportAgent', function (accounts) {
 
         // todo: check balance after
     });
-
-
-});
+}
